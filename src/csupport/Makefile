@@ -23,6 +23,7 @@ $(ODIR)/%.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 $(LDIR)/$(LIB_NAME).a: $(OBJ)
+	@mkdir -p $(LDIR) || true
 	ar crv $@ $(OBJ)
 	ranlib $@
 
