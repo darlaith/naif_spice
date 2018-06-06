@@ -1,0 +1,6 @@
+exe/
+exe/*
+lib/
+lib/*
+src/*/obj/
+src/*/obj/*
