@@ -11,12 +11,11 @@ LDIR =../../lib
 
 LIBS=-lm -m64
 
-_DEPS=$(wildcard *.h)
-DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
+DEPS=$(wildcard $(IDIR)/*.h)
 
 _SRC=$(wildcard *.c)
 _OBJ=$(_SRC:.c=.o)
-OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
+OBJ=$(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(ODIR)/%.o: %.c $(DEPS)
 	@mkdir -p $(ODIR) || true

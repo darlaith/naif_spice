@@ -1,7 +1,8 @@
 .DEFAULT_GOAL:=all
 
-BIN_NAME=$(subst .pgm,,$(wildcard *.pgm))
+BIN_NAMES=$(patsubst %.pgm,%,$(wildcard *.pgm))
 
+BDIR =../../exe
 IDIR =../../include
 CC=gcc
 CFLAGS=-I$(IDIR) -ansi -m64 -O2 -DNON_UNIX_STDIO
@@ -11,31 +12,32 @@ LDIR =../../lib
 
 LIBS=-lm -m64
 
-_DEPS=$(wildcard *.h)
-DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
+DEPS=$(wildcard $(IDIR)/*.h)
 
 _SRC=$(wildcard *.c)
-_OBJ=$(_SRC:.c=.o) main.o $(BIN_NAME).o
-OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
+_OBJ=$(_SRC:.c=.o)
+OBJ=$(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(ODIR)/%.o: %.c $(DEPS)
 	@mkdir -p $(ODIR) || true
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-$(ODIR)/main.o: main.x $(DEPS)
-	@mkdir -p $(ODIR) || true
-	$(CC) -c -x c -o $@ $< $(CFLAGS)
+$(LDIR)/cspice.a:
+	$(MAKE) -C ../cspice
 
-$(ODIR)/$(BIN_NAME).o: $(BIN_NAME).pgm $(DEPS)
+define make-binobj-target
+$(ODIR)/$1.o: $1.pgm $(DEPS)
 	@mkdir -p $(ODIR) || true
-	$(CC) -c -x c -o $@ $< $(CFLAGS)
+	$(CC) -c -x c -o $(ODIR)/$1.o $1.pgm $(CFLAGS)
+$(BDIR)/$1: $(ODIR)/$1.o $(OBJ) $(LDIR)/cspice.a
+	@mkdir -p $(BDIR) || true
+	$(CC) -o $(BDIR)/$1 $(ODIR)/$1.o $(OBJ) $(CFLAGS) -L$(LDIR) $(LDIR)/cspice.a $(LIBS)
+all:: $(BDIR)/$1
+endef
+$(foreach element,$(BIN_NAMES),$(eval $(call make-binobj-target,$(element))))
 
-$(BIN_NAME): $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
-	
 .PHONY: clean all
 
-all: $(BIN_NAME)
-
 clean:
-	rm -Rf $(ODIR) *~ core $(INCDIR)/*~
+	rm -Rf $(ODIR) *~ core
+	rm -f $(foreach element,$(BIN_NAMES), $(BDIR)/$(element))
