@@ -23,7 +23,7 @@ $(ODIR)/%.o: %.c $(DEPS)
 
 $(LDIR)/$(LIB_NAME).a: $(OBJ)
 	@mkdir -p $(LDIR) || true
-	ar crv $@ $(OBJ)
+	ar cr $@ $(OBJ)
 	ranlib $@
 
 .PHONY: clean all
