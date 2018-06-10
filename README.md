@@ -55,6 +55,14 @@ to clean (includes sub-directories).
 
 + Support for DESTDIR on Makefiles
 + Target support for system installation (make install)
++ Switch to Autotools building process to handle different architectures
++ Integrate support for all development frameworks
+ + C (current status on 64bit, will include also 32bit support)
+ + Fortran
+ + IDL
+ + Java
+ + Python
+ + We'll see.
 
 ## References:
 
